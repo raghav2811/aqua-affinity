@@ -28,18 +28,18 @@ export default function StatsBar({ sensors }: { sensors: IndustrySensor[] }) {
   return (
     <div
       className="flex items-center gap-0 overflow-x-auto flex-shrink-0"
-      style={{ background: 'rgba(15,23,42,0.95)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+      style={{ background: 'rgba(240,249,255,0.97)', borderBottom: '1px solid #bae6fd' }}
     >
       {stats.map((s, i) => (
         <div
           key={s.label}
           className="flex items-center gap-2 px-4 py-2 flex-shrink-0"
-          style={{ borderRight: i < stats.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}
+          style={{ borderRight: i < stats.length - 1 ? '1px solid #e0f2fe' : 'none' }}
         >
           <span className="text-lg font-bold tabular-nums" style={{ color: s.color }}>
             {s.value}
           </span>
-          <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <span className="text-xs" style={{ color: '#64748b' }}>
             {s.label}
           </span>
         </div>

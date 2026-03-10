@@ -52,7 +52,7 @@ function createSensorIcon(color: string): L.DivIcon {
   return L.divIcon({
     className: 'sensor-icon-wrapper',
     html: `
-      <div class="sensor-dot-inner" style="width:13px;height:13px;background:${color};box-shadow:0 0 0 2px rgba(0,0,0,0.4),0 0 10px ${color}60;"></div>
+      <div class="sensor-dot-inner" style="width:13px;height:13px;background:${color};box-shadow:0 0 0 2px rgba(255,255,255,0.9),0 0 10px ${color}60;"></div>
       <div class="sensor-ring" style="border-color:${color};"></div>
       <div class="sensor-ring-outer" style="border-color:${color};"></div>
     `,
@@ -71,7 +71,7 @@ function createGroundIcon(color: string): L.DivIcon {
         <!-- sensor head box -->
         <div style="
           width:30px;height:22px;border-radius:5px;flex-shrink:0;
-          background:#1e293b;border:2px solid ${color};
+          background:#f0f9ff;border:2px solid ${color};
           box-shadow:0 0 16px ${color}55;
           display:flex;align-items:center;justify-content:center;position:relative;">
           <!-- 3 sensor dots -->
@@ -286,7 +286,7 @@ export default function MapClient({ userType, sensors, selectedSensorId, onSenso
       zoomControl={false}
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
         attribution='&copy; OpenStreetMap contributors &copy; CARTO'
         maxZoom={19}
       />

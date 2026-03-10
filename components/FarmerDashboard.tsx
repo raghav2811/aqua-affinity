@@ -40,15 +40,15 @@ function DepthGauge({ sensor }: { sensor: VRSensor }) {
   return (
     <div style={{ width: '100%' }}>
       <div className="flex justify-between items-center mb-1">
-        <span className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>0 m</span>
+        <span className="text-xs" style={{ color: '#94a3b8' }}>0 m</span>
         <span className="text-xs font-bold" style={{ color }}>
           {level.toFixed(1)} m
         </span>
-        <span className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>20 m</span>
+        <span className="text-xs" style={{ color: '#94a3b8' }}>20 m</span>
       </div>
       <div
         className="relative w-full rounded-full overflow-hidden"
-        style={{ height: 8, background: 'rgba(255,255,255,0.08)' }}
+        style={{ height: 8, background: '#e0f2fe' }}
       >
         {/* Safe zone marker */}
         <div
@@ -114,9 +114,9 @@ function SensorCard({
       onClick={onClick}
       className="cursor-pointer rounded-xl p-4"
       style={{
-        background: 'rgba(255,255,255,0.04)',
-        border: `1px solid ${sprinklerColor}25`,
-        boxShadow: `0 0 20px ${sprinklerColor}08`,
+        background: 'rgba(15,23,42,0.04)',
+        border: `1px solid ${sprinklerColor}22`,
+        boxShadow: `0 0 20px ${sprinklerColor}06`,
       }}
     >
       {/* Header row */}
@@ -125,7 +125,7 @@ function SensorCard({
           <div className="flex items-center gap-2 flex-wrap">
             <span
               className="text-xs font-mono px-1.5 py-0.5 rounded"
-              style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.55)' }}
+            style={{ background: '#f0f9ff', color: '#64748b', border: '1px solid #e0f2fe' }}
             >
               {sensor.id}
             </span>
@@ -145,12 +145,12 @@ function SensorCard({
               </span>
             )}
           </div>
-          <p className="text-white font-semibold text-sm mt-1 truncate">{sensor.farmerName}</p>
-          <p className="text-xs truncate" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <p className="font-semibold text-sm mt-1 truncate" style={{ color: '#0c4a6e' }}>{sensor.farmerName}</p>
+          <p className="text-xs truncate" style={{ color: '#64748b' }}>
             {sensor.location}
           </p>
         </div>
-        <ChevronRight size={16} style={{ color: 'rgba(255,255,255,0.25)', flexShrink: 0 }} />
+        <ChevronRight size={16} style={{ color: '#cbd5e1', flexShrink: 0 }} />
       </div>
 
       {/* Depth gauge */}
@@ -161,36 +161,36 @@ function SensorCard({
       {/* Mini stats */}
       <div className="grid grid-cols-3 gap-2">
         <div className="text-center">
-          <p className="text-xs font-bold" style={{ color: '#38bdf8' }}>
+          <p className="text-xs font-bold" style={{ color: '#0284c7' }}>
             {r.soilMoisture}%
           </p>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Moisture</p>
+          <p className="text-xs" style={{ color: '#94a3b8' }}>Moisture</p>
         </div>
         <div className="text-center">
           <p className="text-xs font-bold" style={{ color: levelColor }}>
             {getWaterLevelLabel(sensor)}
           </p>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Water Level</p>
+          <p className="text-xs" style={{ color: '#94a3b8' }}>Water Level</p>
         </div>
         <div className="text-center">
           <p className="text-xs font-bold" style={{ color: '#a78bfa' }}>
             {r.temperature}°C
           </p>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Temp</p>
+          <p className="text-xs" style={{ color: '#94a3b8' }}>Temp</p>
         </div>
       </div>
 
       {/* Crop + signal row */}
       <div className="flex items-center justify-between mt-3 pt-3"
-        style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        style={{ borderTop: '1px solid #e0f2fe' }}>
         <span className="text-xs flex items-center gap-1" style={{ color: '#4ade80' }}>
           <Sprout size={11} /> {sensor.cropType}
         </span>
         <div className="flex items-center gap-2">
           <button
             onClick={(e) => { e.stopPropagation(); onSimulate(); }}
-            className="flex items-center gap-1 text-xs px-2 py-0.5 rounded transition-colors hover:bg-white/10"
-            style={{ color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.12)' }}
+            className="flex items-center gap-1 text-xs px-2 py-0.5 rounded transition-colors"
+            style={{ color: '#64748b', border: '1px solid #e0f2fe', background: '#f8fafc' }}
             title="Open simulator"
           >
             <Sliders size={10} /> Sim
@@ -199,7 +199,7 @@ function SensorCard({
             {r.signalStrength > 50
               ? <Wifi size={11} style={{ color: '#22c55e' }} />
               : <WifiOff size={11} style={{ color: '#f59e0b' }} />}
-            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <span className="text-xs" style={{ color: '#64748b' }}>
               {r.signalStrength}%
             </span>
           </div>
@@ -235,7 +235,7 @@ function AlertItem({
       exit={{ opacity: 0, height: 0 }}
       className="flex items-start gap-3 p-3 rounded-lg mb-2"
       style={{
-        background: alert.acknowledged ? 'rgba(255,255,255,0.02)' : `${color}0d`,
+        background: alert.acknowledged ? '#f8fafc' : `${color}0d`,
         border: `1px solid ${color}${alert.acknowledged ? '10' : '30'}`,
       }}
     >
@@ -249,18 +249,18 @@ function AlertItem({
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.75)' }}>
+        <p className="text-xs leading-relaxed" style={{ color: '#334155' }}>
           {alert.message}
         </p>
-        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>{timeAgo}</p>
+        <p className="text-xs mt-1" style={{ color: '#94a3b8' }}>{timeAgo}</p>
       </div>
       {!alert.acknowledged && (
         <button
           onClick={onAck}
-          className="flex-shrink-0 p-1 rounded hover:bg-white/10 transition-colors"
+          className="flex-shrink-0 p-1 rounded transition-colors"
           title="Mark as read"
         >
-          <Check size={12} style={{ color: 'rgba(255,255,255,0.4)' }} />
+          <Check size={12} style={{ color: '#94a3b8' }} />
         </button>
       )}
     </motion.div>
@@ -301,7 +301,7 @@ function SensorDetailModal({
   return (
     <motion.div
       className="absolute inset-0 flex items-center justify-center z-[2000]"
-      style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+        style={{ background: 'rgba(14,165,233,0.10)', backdropFilter: 'blur(4px)' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -310,10 +310,11 @@ function SensorDetailModal({
       <motion.div
         className="rounded-2xl overflow-hidden flex flex-col"
         style={{
-          background: '#0f172a',
+          background: '#ffffff',
           border: `1px solid ${sprinklerColor}30`,
           width: 'min(580px, 96vw)',
           maxHeight: '88vh',
+          boxShadow: '0 20px 60px rgba(14,165,233,0.15)',
         }}
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
@@ -322,12 +323,12 @@ function SensorDetailModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal header */}
-        <div className="px-6 pt-6 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="px-6 pt-6 pb-4" style={{ borderBottom: '1px solid #e0f2fe' }}>
           <div className="flex items-start justify-between gap-3 mb-3">
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs font-mono px-2 py-0.5 rounded"
-                  style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' }}>
+                  style={{ background: '#f0f9ff', color: '#64748b', border: '1px solid #e0f2fe' }}>
                   {sensor.id}
                 </span>
                 <span className="text-xs px-2 py-0.5 rounded font-medium flex items-center gap-1"
@@ -336,14 +337,14 @@ function SensorDetailModal({
                   {getSprinklerLabel(sensor.sprinklerState)}
                 </span>
               </div>
-              <h2 className="text-white font-bold text-base">{sensor.farmerName}</h2>
-              <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              <h2 className="font-bold text-base" style={{ color: '#0c4a6e' }}>{sensor.farmerName}</h2>
+              <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>
                 {sensor.location} · {sensor.cropType} · {sensor.fieldAreaHectares} ha
               </p>
             </div>
             <button onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
-              style={{ color: 'rgba(255,255,255,0.5)' }}>
+              className="p-1.5 rounded-lg transition-colors"
+              style={{ color: '#94a3b8', background: '#f0f9ff', border: '1px solid #e0f2fe' }}>
               <XCircle size={18} />
             </button>
           </div>
@@ -355,14 +356,14 @@ function SensorDetailModal({
         {/* Sensor readings grid */}
         <div className="overflow-y-auto flex-1 px-6 py-4">
           <p className="text-xs font-semibold uppercase tracking-wider mb-3"
-            style={{ color: 'rgba(255,255,255,0.35)' }}>
+            style={{ color: '#64748b' }}>
             Live Readings
           </p>
           <div className="grid grid-cols-2 gap-2 mb-5">
             {stats.map((s) => (
               <div key={s.label} className="px-3 py-2.5 rounded-xl"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>{s.label}</p>
+                style={{ background: '#f0f9ff', border: '1px solid #bae6fd' }}>
+                <p className="text-xs" style={{ color: '#64748b' }}>{s.label}</p>
                 <p className="text-base font-bold mt-0.5" style={{ color: s.color ?? '#fff' }}>
                   {s.value}<span className="text-xs font-normal ml-0.5">{s.unit}</span>
                 </p>
@@ -372,18 +373,19 @@ function SensorDetailModal({
 
           {/* Pump status */}
           <div className="flex items-center gap-3 p-3 rounded-xl mb-5"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <Zap size={16} style={{ color: r.pumpStatus === 'on' ? '#22c55e' : 'rgba(255,255,255,0.3)' }} />
+            style={{ background: '#f8fafc', border: '1px solid #e0f2fe' }}>
+            <Zap size={16} style={{ color: r.pumpStatus === 'on' ? '#22c55e' : '#94a3b8' }} />
             <div>
-              <p className="text-xs font-semibold text-white">Pump Status</p>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              <p className="text-xs font-semibold" style={{ color: '#0c4a6e' }}>Pump Status</p>
+              <p className="text-xs" style={{ color: '#64748b' }}>
                 {r.pumpStatus === 'on' ? 'Pump is running — extraction in progress' : 'Pump is off'}
               </p>
             </div>
             <span className="ml-auto text-xs font-bold px-2 py-1 rounded-lg"
               style={{
-                background: r.pumpStatus === 'on' ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.06)',
-                color: r.pumpStatus === 'on' ? '#22c55e' : 'rgba(255,255,255,0.4)',
+                background: r.pumpStatus === 'on' ? 'rgba(34,197,94,0.12)' : '#f0f9ff',
+                color: r.pumpStatus === 'on' ? '#22c55e' : '#94a3b8',
+                border: `1px solid ${r.pumpStatus === 'on' ? 'rgba(34,197,94,0.2)' : '#e0f2fe'}`,
               }}>
               {r.pumpStatus.toUpperCase()}
             </span>
@@ -393,7 +395,7 @@ function SensorDetailModal({
           {sensor.alerts.length > 0 && (
             <>
               <p className="text-xs font-semibold uppercase tracking-wider mb-3"
-                style={{ color: 'rgba(255,255,255,0.35)' }}>
+              style={{ color: '#64748b' }}>
                 Notifications ({sensor.alerts.filter((a) => !a.acknowledged).length} unread)
               </p>
               <AnimatePresence>
@@ -509,7 +511,7 @@ export default function FarmerDashboard() {
   return (
     <motion.div
       className="absolute inset-0 z-[900] flex flex-col"
-      style={{ background: '#0a0f1e', overflow: 'hidden' }}
+      style={{ background: '#f0f9ff', overflow: 'hidden' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -517,18 +519,18 @@ export default function FarmerDashboard() {
       {/* DB loading overlay */}
       {dbLoading && (
         <div className="absolute inset-0 z-10 flex items-center justify-center"
-          style={{ background: '#0a0f1e' }}>
+          style={{ background: '#f0f9ff' }}>
           <div className="text-center">
             <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin mx-auto mb-3"
-              style={{ borderColor: '#22c55e', borderTopColor: 'transparent' }} />
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>Loading sensor data…</p>
+              style={{ borderColor: '#0ea5e9', borderTopColor: 'transparent' }} />
+            <p className="text-sm" style={{ color: '#64748b' }}>Loading sensor data…</p>
           </div>
         </div>
       )}
       {/* ── Top stats bar ─────────────────────────────────────────────────────── */}
       <div
         className="flex items-center gap-0 overflow-x-auto flex-shrink-0 px-1"
-        style={{ background: 'rgba(15,23,42,0.98)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+        style={{ background: 'rgba(240,249,255,0.97)', borderBottom: '1px solid #bae6fd' }}
       >
         {[
           { label: 'VR Sensors', value: sensors.length, color: '#38bdf8' },
@@ -540,12 +542,12 @@ export default function FarmerDashboard() {
           <div
             key={s.label}
             className="flex items-center gap-2 px-4 py-2 flex-shrink-0"
-            style={{ borderRight: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}
+            style={{ borderRight: i < arr.length - 1 ? '1px solid #e0f2fe' : 'none' }}
           >
             <span className="text-lg font-bold tabular-nums" style={{ color: s.color }}>
               {s.value}
             </span>
-            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>{s.label}</span>
+            <span className="text-xs" style={{ color: '#64748b' }}>{s.label}</span>
           </div>
         ))}
 
@@ -554,24 +556,24 @@ export default function FarmerDashboard() {
 
         {/* Hourly check controls */}
         <div className="flex items-center gap-3 px-4 py-2 flex-shrink-0"
-          style={{ borderLeft: '1px solid rgba(255,255,255,0.06)' }}>
+          style={{ borderLeft: '1px solid #e0f2fe' }}>
           <motion.div
             animate={checkPulse ? { scale: [1, 1.2, 1], opacity: [1, 0.6, 1] } : {}}
             transition={{ duration: 0.6 }}
             className="flex items-center gap-1.5"
           >
-            <Activity size={13} style={{ color: checkPulse ? '#22c55e' : 'rgba(255,255,255,0.4)' }} />
-            <span className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <Activity size={13} style={{ color: checkPulse ? '#0ea5e9' : '#94a3b8' }} />
+            <span className="text-xs font-mono" style={{ color: '#64748b' }}>
               Next check: <span style={{ color: '#38bdf8' }}>{formatCountdown(countdown)}</span>
             </span>
           </motion.div>
-          <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          <span className="text-xs" style={{ color: '#94a3b8' }}>
             Last: {lastCheckFmt}
           </span>
           <button
             onClick={performCheck}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-105"
-            style={{ background: 'rgba(56,189,248,0.15)', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.3)' }}
+            style={{ background: 'rgba(14,165,233,0.10)', color: '#0284c7', border: '1px solid rgba(14,165,233,0.25)' }}
             title="Trigger hourly check now"
           >
             <RefreshCw size={12} />
@@ -587,13 +589,13 @@ export default function FarmerDashboard() {
           {/* Section header */}
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-white font-bold text-base">VR Field Sensors</h2>
-              <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              <h2 className="font-bold text-base" style={{ color: '#0c4a6e' }}>VR Field Sensors</h2>
+              <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>
                 5 IoT groundwater sensors · Checked every hour
               </p>
             </div>
             <div className="flex items-center gap-1 px-2 py-1 rounded-full"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+              style={{ background: '#f0f9ff', border: '1px solid #bae6fd' }}>
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
               <span className="text-xs text-green-400 font-medium">LIVE</span>
             </div>
@@ -614,9 +616,9 @@ export default function FarmerDashboard() {
 
           {/* How it works legend */}
           <div className="mt-5 p-4 rounded-xl"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            style={{ background: '#f8fafc', border: '1px solid #e0f2fe' }}>
             <p className="text-xs font-semibold uppercase tracking-wider mb-3"
-              style={{ color: 'rgba(255,255,255,0.3)' }}>
+              style={{ color: '#64748b' }}>
               Sprinkler Decision Logic (Hourly)
             </p>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
@@ -630,7 +632,7 @@ export default function FarmerDashboard() {
                   <span className="text-base">{row.icon}</span>
                   <div>
                     <p className="text-xs font-semibold" style={{ color: row.color }}>{row.title}</p>
-                    <p className="text-xs mt-0.5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                    <p className="text-xs mt-0.5 leading-relaxed" style={{ color: '#64748b' }}>
                       {row.desc}
                     </p>
                   </div>
@@ -645,15 +647,15 @@ export default function FarmerDashboard() {
           className="hidden lg:flex flex-col flex-shrink-0 overflow-hidden"
           style={{
             width: 320,
-            background: 'rgba(15,23,42,0.9)',
-            borderLeft: '1px solid rgba(255,255,255,0.07)',
+            background: 'rgba(240,249,255,0.97)',
+            borderLeft: '1px solid #bae6fd',
           }}
         >
           <div className="flex items-center justify-between px-4 py-3"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+            style={{ borderBottom: '1px solid #e0f2fe' }}>
             <div className="flex items-center gap-2">
-              <Bell size={15} style={{ color: totalUnread > 0 ? '#ef4444' : 'rgba(255,255,255,0.4)' }} />
-              <span className="text-sm font-semibold text-white">Farmer Alerts</span>
+              <Bell size={15} style={{ color: totalUnread > 0 ? '#ef4444' : '#94a3b8' }} />
+              <span className="text-sm font-semibold" style={{ color: '#0c4a6e' }}>Farmer Alerts</span>
               {totalUnread > 0 && (
                 <span className="text-xs px-1.5 py-0.5 rounded-full font-bold"
                   style={{ background: '#ef444420', color: '#ef4444' }}>
@@ -671,7 +673,7 @@ export default function FarmerDashboard() {
                   )
                 }
                 className="text-xs hover:opacity-80 transition-opacity"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                style={{ color: '#64748b' }}
               >
                 Mark all read
               </button>
@@ -681,9 +683,9 @@ export default function FarmerDashboard() {
           <div className="flex-1 overflow-y-auto p-3">
             {sensors.every((s) => s.alerts.length === 0) ? (
               <div className="flex flex-col items-center justify-center h-full text-center py-8">
-                <BellOff size={32} style={{ color: 'rgba(255,255,255,0.15)' }} className="mb-3" />
-                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>No alerts yet</p>
-                <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                <BellOff size={32} style={{ color: '#cbd5e1' }} className="mb-3" />
+                <p className="text-sm" style={{ color: '#64748b' }}>No alerts yet</p>
+                <p className="text-xs mt-1" style={{ color: '#94a3b8' }}>
                   Alerts appear here when water levels drop
                 </p>
               </div>
@@ -709,9 +711,9 @@ export default function FarmerDashboard() {
           </div>
 
           {/* Sensor health footer */}
-          <div className="px-3 pb-3 pt-1" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="px-3 pb-3 pt-1" style={{ borderTop: '1px solid #e0f2fe' }}>
             <p className="text-xs uppercase tracking-wider mb-2 px-1 pt-2"
-              style={{ color: 'rgba(255,255,255,0.25)' }}>
+              style={{ color: '#64748b' }}>
               Sensor Health
             </p>
             {sensors.map((s) => (
@@ -721,15 +723,15 @@ export default function FarmerDashboard() {
                     className="w-1.5 h-1.5 rounded-full"
                     style={{ background: s.currentReading.signalStrength > 50 ? '#22c55e' : '#f59e0b' }}
                   />
-                  <span className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                  <span className="text-xs font-mono" style={{ color: '#64748b' }}>
                     {s.id}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                  <span className="text-xs" style={{ color: '#94a3b8' }}>
                     🔋 {s.currentReading.batteryLevel}%
                   </span>
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                  <span className="text-xs" style={{ color: '#94a3b8' }}>
                     📶 {s.currentReading.signalStrength}%
                   </span>
                 </div>

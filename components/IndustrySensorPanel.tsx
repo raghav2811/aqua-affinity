@@ -32,7 +32,7 @@ export default function IndustrySensorPanel({ sensor, onClose }: Props) {
           <motion.div
             key="backdrop"
             className="absolute inset-0 md:hidden"
-            style={{ background: 'rgba(0,0,0,0.5)', zIndex: 400 }}
+            style={{ background: 'rgba(14,165,233,0.15)', zIndex: 400 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -46,9 +46,9 @@ export default function IndustrySensorPanel({ sensor, onClose }: Props) {
             style={{
               width: 'min(440px, 100%)',
               zIndex: 500,
-              background: '#0f172a',
-              borderLeft: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: '-8px 0 40px rgba(0,0,0,0.5)',
+              background: '#ffffff',
+              borderLeft: '1px solid #bae6fd',
+              boxShadow: '-8px 0 40px rgba(14,165,233,0.12)',
             }}
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
@@ -89,12 +89,12 @@ function PanelContent({
     <>
       {/* Header */}
       <div className="flex-shrink-0 px-5 pt-5 pb-4"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        style={{ borderBottom: '1px solid #e0f2fe' }}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs font-mono px-2 py-0.5 rounded"
-                style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.55)' }}>
+                style={{ background: '#f0f9ff', color: '#64748b', border: '1px solid #e0f2fe' }}>
                 {sensor.id}
               </span>
               <span className="text-xs px-2 py-0.5 rounded font-medium"
@@ -102,12 +102,12 @@ function PanelContent({
                 {statusLabel}
               </span>
             </div>
-            <h2 className="text-white font-bold text-base leading-tight truncate">{sensor.industryName}</h2>
-            <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.45)' }}>{sensor.location}</p>
+            <h2 className="font-bold text-base leading-tight truncate" style={{ color: '#0c4a6e' }}>{sensor.industryName}</h2>
+            <p className="text-xs mt-0.5" style={{ color: '#64748b' }}>{sensor.location}</p>
           </div>
           <button onClick={onClose}
-            className="flex-shrink-0 p-1.5 rounded-lg transition-colors hover:bg-white/10"
-            style={{ color: 'rgba(255,255,255,0.5)' }}>
+            className="flex-shrink-0 p-1.5 rounded-lg transition-colors"
+            style={{ color: '#94a3b8', background: '#f0f9ff', border: '1px solid #e0f2fe' }}>
             <X size={18} />
           </button>
         </div>
@@ -131,13 +131,13 @@ function PanelContent({
 
       {/* Tabs */}
       <div className="flex-shrink-0 flex gap-0.5 px-5 pt-3 pb-0"
-        style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        style={{ borderBottom: '1px solid #e0f2fe', background: '#f8fafc' }}>
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className="flex items-center gap-1.5 px-3 pb-2.5 pt-1 text-xs font-medium transition-colors relative"
-            style={{ color: activeTab === tab.id ? '#38bdf8' : 'rgba(255,255,255,0.45)' }}
+            style={{ color: activeTab === tab.id ? '#0284c7' : '#94a3b8' }}
           >
             {tab.icon}
             {tab.label}
@@ -145,7 +145,7 @@ function PanelContent({
               <motion.div
                 layoutId="tab-underline"
                 className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
-                style={{ background: '#38bdf8' }}
+                style={{ background: '#0284c7' }}
               />
             )}
           </button>
@@ -204,7 +204,7 @@ function OverviewTab({ sensor, fine, statusColor, limitPct }: {
             <div>
               <p className="text-xs text-red-300 mb-1">No NOC — Illegal Extraction Penalty</p>
               <p className="text-red-400 font-bold text-xl">{formatINR(fine.nocAnnualFine ?? 0)}</p>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>Per year · {fine.nocFineCategory}</p>
+              <p className="text-xs" style={{ color: '#64748b' }}>Per year · {fine.nocFineCategory}</p>
               {fine.daysExceeded > 0 && (
                 <p className="text-red-300 text-xs mt-1">
                   + Additional ₹{fine.finePerDay.toLocaleString('en-IN')}/day for limit violations
@@ -215,7 +215,7 @@ function OverviewTab({ sensor, fine, statusColor, limitPct }: {
             <div>
               <p className="text-xs text-red-300 mb-1">Limit exceeded on {fine.daysExceeded} days (last 30d)</p>
               <p className="text-red-400 font-bold text-xl">{formatINR(fine.totalFine30Days)}</p>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              <p className="text-xs" style={{ color: '#64748b' }}>
                 ₹{fine.finePerDay.toLocaleString('en-IN')}/day × {fine.daysExceeded} days
               </p>
             </div>
@@ -234,17 +234,17 @@ function OverviewTab({ sensor, fine, statusColor, limitPct }: {
       )}
 
       {/* Today's extraction bar */}
-      <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+      <div className="rounded-xl p-4" style={{ background: '#f0f9ff', border: '1px solid #bae6fd' }}>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs" style={{ color: 'rgba(255,255,255,0.55)' }}>Today's Extraction</span>
-          <span className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <span className="text-xs" style={{ color: '#64748b' }}>Today's Extraction</span>
+          <span className="text-xs font-mono" style={{ color: '#94a3b8' }}>
             Limit: {formatLitres(fine.dailyLimit)}
           </span>
         </div>
         <p className="text-2xl font-bold mb-3" style={{ color: statusColor }}>
           {formatLitres(sensor.todayExtraction)}
         </p>
-        <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+        <div className="h-2 rounded-full overflow-hidden" style={{ background: '#e0f2fe' }}>
           <motion.div
             className="h-full rounded-full"
             style={{ background: statusColor }}
@@ -253,7 +253,7 @@ function OverviewTab({ sensor, fine, statusColor, limitPct }: {
             transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
           />
         </div>
-        <p className="text-xs mt-1.5 text-right" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <p className="text-xs mt-1.5 text-right" style={{ color: '#94a3b8' }}>
           {limitPct.toFixed(0)}% of limit
         </p>
       </div>
@@ -277,8 +277,8 @@ function OverviewTab({ sensor, fine, statusColor, limitPct }: {
       </div>
 
       {/* 30-day summary */}
-      <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-        <h3 className="text-xs font-semibold mb-3 uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>
+      <div className="rounded-xl p-4" style={{ background: '#f8fafc', border: '1px solid #e0f2fe' }}>
+        <h3 className="text-xs font-semibold mb-3 uppercase tracking-wider" style={{ color: '#64748b' }}>
           30-Day Summary
         </h3>
         <div className="grid grid-cols-3 gap-2 text-center">
@@ -288,8 +288,8 @@ function OverviewTab({ sensor, fine, statusColor, limitPct }: {
             { label: 'Violations', value: String(fine.daysExceeded) + ' days' },
           ].map(({ label, value }) => (
             <div key={label}>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>{label}</p>
-              <p className="text-sm font-bold text-white mt-0.5">{value}</p>
+              <p className="text-xs" style={{ color: '#64748b' }}>{label}</p>
+              <p className="text-sm font-bold mt-0.5" style={{ color: '#0c4a6e' }}>{value}</p>
             </div>
           ))}
         </div>
@@ -297,8 +297,8 @@ function OverviewTab({ sensor, fine, statusColor, limitPct }: {
 
       {/* Coordinates */}
       <div className="flex items-center gap-2 px-3 py-2 rounded-lg"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-        <span className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.3)' }}>
+        style={{ background: '#f8fafc', border: '1px solid #e0f2fe' }}>
+        <span className="text-xs font-mono" style={{ color: '#94a3b8' }}>
           📍 {sensor.lat.toFixed(4)}°N, {sensor.lng.toFixed(4)}°E
         </span>
       </div>
@@ -314,24 +314,24 @@ function ExtractionTab({ sensor, fine }: {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-white mb-1">Daily Extraction — Last 14 Days</h3>
-        <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <h3 className="text-sm font-semibold mb-1" style={{ color: '#0c4a6e' }}>Daily Extraction — Last 14 Days</h3>
+        <p className="text-xs mb-4" style={{ color: '#64748b' }}>
           Red bars indicate days exceeding the {formatLitres(fine.dailyLimit)}/day limit
         </p>
         <ExtractionChart extractions={sensor.dailyExtractions} dailyLimit={fine.dailyLimit} />
       </div>
 
       {recentViolations.length > 0 && (
-        <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
-          <div className="px-4 py-2.5" style={{ background: 'rgba(239,68,68,0.08)' }}>
-            <h4 className="text-xs font-semibold text-red-400">Recent Violations</h4>
+        <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #fecaca' }}>
+          <div className="px-4 py-2.5" style={{ background: 'rgba(239,68,68,0.06)' }}>
+            <h4 className="text-xs font-semibold text-red-500">Recent Violations</h4>
           </div>
           {recentViolations.map((v: any) => (
             <div key={v.date} className="flex items-center justify-between px-4 py-2.5"
-              style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-              <span className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.5)' }}>{v.date}</span>
+              style={{ borderTop: '1px solid #fee2e2', background: '#fff' }}>
+              <span className="text-xs font-mono" style={{ color: '#64748b' }}>{v.date}</span>
               <span className="text-xs text-red-400">{formatLitres(v.liters)}</span>
-              <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>+{formatLitres(v.excess)}</span>
+              <span className="text-xs" style={{ color: '#94a3b8' }}>+{formatLitres(v.excess)}</span>
               <span className="text-xs font-medium text-red-400">{formatINR(v.fine)}</span>
             </div>
           ))}
@@ -353,26 +353,26 @@ function RainfallTab({ sensor }: { sensor: IndustrySensor }) {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-white mb-1">7-Day Rainfall Forecast</h3>
-        <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <h3 className="text-sm font-semibold mb-1" style={{ color: '#0c4a6e' }}>7-Day Rainfall Forecast</h3>
+        <p className="text-xs mb-4" style={{ color: '#64748b' }}>
           Predicted rainfall and probability for the region
         </p>
         <RainfallChart forecast={sensor.rainfallForecast} />
       </div>
 
-      <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
-        <div className="px-4 py-2.5" style={{ background: 'rgba(56,189,248,0.08)' }}>
-          <h4 className="text-xs font-semibold text-sky-400">Forecast Details</h4>
+      <div className="rounded-xl overflow-hidden" style={{ border: '1px solid #bae6fd' }}>
+        <div className="px-4 py-2.5" style={{ background: 'rgba(14,165,233,0.07)' }}>
+          <h4 className="text-xs font-semibold" style={{ color: '#0284c7' }}>Forecast Details</h4>
         </div>
         {sensor.rainfallForecast.map((f) => (
           <div key={f.date} className="flex items-center justify-between px-4 py-2.5"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            <span className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.5)' }}>{f.date}</span>
+            style={{ borderTop: '1px solid #e0f2fe', background: '#fff' }}>
+            <span className="text-xs font-mono" style={{ color: '#64748b' }}>{f.date}</span>
             <div className="flex items-center gap-1">
               <span className="text-sky-400 text-xs font-medium">{f.mm} mm</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-16 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <div className="w-16 h-1.5 rounded-full overflow-hidden" style={{ background: '#e0f2fe' }}>
                 <div className="h-full rounded-full" style={{ width: `${f.probability}%`, background: '#a78bfa' }} />
               </div>
               <span className="text-xs" style={{ color: 'rgba(167,139,250,0.8)' }}>{f.probability}%</span>
@@ -389,13 +389,13 @@ function MetricCard({ icon, label, value, sub, color }: {
 }) {
   return (
     <div className="rounded-xl p-3.5"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+      style={{ background: '#f0f9ff', border: '1px solid #bae6fd' }}>
       <div className="flex items-center gap-2 mb-2">
         {icon}
-        <span className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>{label}</span>
+        <span className="text-xs" style={{ color: '#64748b' }}>{label}</span>
       </div>
       <p className="text-xl font-bold" style={{ color }}>{value}</p>
-      <p className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,0.3)' }}>{sub}</p>
+      <p className="text-xs mt-0.5" style={{ color: '#94a3b8' }}>{sub}</p>
     </div>
   );
 }

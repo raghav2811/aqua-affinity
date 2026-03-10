@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0d1117;
-  --foreground: #e2e8f0;
+  --background:    #f0f9ff;
+  --foreground:    #0c4a6e;
+  --card-bg:       #ffffff;
+  --card-border:   #bae6fd;
+  --accent-blue:   #0ea5e9;
+  --accent-teal:   #06b6d4;
+  --accent-green:  #10b981;
+  --text-muted:    #64748b;
 }
 
 @theme inline {
@@ -25,17 +31,17 @@ body {
 
 /* ===== Leaflet overrides ===== */
 .leaflet-container {
-  background: #1a1a2e !important;
+  background: #e0f2fe !important;
 }
 
 .leaflet-control-attribution {
-  background: rgba(0,0,0,0.6) !important;
-  color: rgba(255,255,255,0.35) !important;
+  background: rgba(240,249,255,0.85) !important;
+  color: #64748b !important;
   font-size: 9px !important;
 }
 
 .leaflet-control-attribution a {
-  color: rgba(255,255,255,0.4) !important;
+  color: #0ea5e9 !important;
 }
 
 /* ===== Sensor icon styles ===== */
@@ -104,12 +110,12 @@ body {
 
 /* ===== Sensor Tooltip ===== */
 .leaflet-tooltip.sensor-tooltip {
-  background: rgba(15,23,42,0.96) !important;
-  border: 1px solid rgba(255,255,255,0.12) !important;
+  background: rgba(255,255,255,0.92) !important;
+  border: 1px solid #bae6fd !important;
   border-radius: 10px !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6) !important;
+  box-shadow: 0 8px 32px rgba(14,165,233,0.15) !important;
   padding: 0 !important;
-  color: white !important;
+  color: #0c4a6e !important;
   font-family: inherit !important;
   font-size: 12px !important;
   white-space: normal !important;
@@ -118,7 +124,7 @@ body {
 }
 
 .leaflet-tooltip.sensor-tooltip::before {
-  border-top-color: rgba(15,23,42,0.96) !important;
+  border-top-color: rgba(255,255,255,0.92) !important;
 }
 
 .sensor-tooltip-content {
@@ -135,13 +141,13 @@ body {
 }
 
 .sensor-tooltip-id {
-  color: rgba(255,255,255,0.3);
+  color: #64748b;
   font-family: monospace;
   font-size: 10px;
 }
 
 .sensor-tooltip-name {
-  color: rgba(255,255,255,0.9);
+  color: #0c4a6e;
   font-weight: 600;
   font-size: 12px;
   margin-bottom: 6px;
@@ -154,7 +160,7 @@ body {
   justify-content: space-between;
   gap: 8px;
   font-size: 11px;
-  color: rgba(255,255,255,0.45);
+  color: #64748b;
   margin-top: 2px;
 }
 
@@ -173,25 +179,25 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.15);
+  background: #bae6fd;
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.25);
+  background: #7dd3fc;
 }
 
 /* ===== Zone label tooltips ===== */
 .leaflet-tooltip.zone-label-tooltip {
-  background: rgba(15,23,42,0.82) !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
+  background: rgba(255,255,255,0.92) !important;
+  border: 1px solid #bae6fd !important;
   border-radius: 6px !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+  box-shadow: 0 2px 8px rgba(14,165,233,0.12) !important;
   padding: 3px 8px !important;
   font-family: inherit !important;
   pointer-events: none !important;
   white-space: nowrap !important;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
 }
 
 .leaflet-tooltip.zone-label-tooltip::before {
@@ -237,4 +243,56 @@ body {
 @keyframes ground-ripple-pulse {
   0%   { transform: scale(0.6); opacity: 0.7; }
   100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* ===== Auth page animations ===== */
+@keyframes authFloat {
+  0%   { transform: translateY(0px) translateX(0px); }
+  50%  { transform: translateY(-28px) translateX(12px); }
+  100% { transform: translateY(-10px) translateX(-8px); }
+}
+
+@keyframes waveScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes authShake {
+  0%   { transform: translateX(0); }
+  12%  { transform: translateX(-10px); }
+  25%  { transform: translateX(9px); }
+  37%  { transform: translateX(-8px); }
+  50%  { transform: translateX(7px); }
+  62%  { transform: translateX(-5px); }
+  75%  { transform: translateX(4px); }
+  87%  { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
+.auth-shake {
+  animation: authShake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+}
+
+@keyframes pulse3d {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(2,132,199,0.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(2,132,199,0); }
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(250%) skewX(-15deg); }
+}
+
+.auth-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: translateX(-100%) skewX(-15deg);
+  pointer-events: none;
+}
+
+.auth-shimmer:hover::after {
+  animation: shimmer 0.7s ease forwards;
 }

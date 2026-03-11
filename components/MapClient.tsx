@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useRef, useEffect, useCallback, useState } from 'react';
 import {
@@ -228,39 +228,63 @@ function CinematicController({
 
 // -- Single sensor marker --
 function SensorMarker({
-  sensor, isSelected, onSelect,
+  sensor, isSelected, onSelect, restrictedToCompany,
 }: {
   sensor: IndustrySensor;
   isSelected: boolean;
-  onSelect: (s: IndustrySensor | null) => void;
+  onSelect: (s: IndustrySensor | null, e?: MouseEvent) => void;
+  restrictedToCompany?: string;
 }) {
-  const fine  = calculateFine(sensor);
-  const color = getStatusColor(fine.status);
-  const icon  = isSelected ? createGroundIcon(color) : createSensorIcon(color);
+  const fine      = calculateFine(sensor);
+  const color     = getStatusColor(fine.status);
+  const icon      = isSelected ? createGroundIcon(color) : createSensorIcon(color);
+  const markerRef = useRef<L.Marker>(null);
+  // If a company restriction is active and this sensor belongs to a different company,
+  // only show the company name in the tooltip — no status, extraction or GW depth.
+  const isOwn = !restrictedToCompany || sensor.industryName === restrictedToCompany;
+
+  // Attach click imperatively — avoids the eventHandlers prop type mismatch in
+  // some IDE/TS server configurations while keeping identical runtime behaviour.
+  useEffect(() => {
+    const marker = markerRef.current;
+    if (!marker) return;
+    const handler = (e: L.LeafletMouseEvent) => {
+      L.DomEvent.stopPropagation(e.originalEvent);
+      onSelect(sensor, e.originalEvent as MouseEvent);
+    };
+    marker.on('click', handler);
+    return () => { marker.off('click', handler); };
+  }, [sensor, onSelect]);
 
   return (
     <Marker
+      ref={markerRef}
       position={[sensor.lat, sensor.lng]}
       icon={icon}
       zIndexOffset={isSelected ? 2000 : 0}
-      eventHandlers={{ click: (e) => { L.DomEvent.stopPropagation(e as unknown as Event); onSelect(sensor); } }}
     >
       {!isSelected && (
         <Tooltip direction="top" offset={[0, -10]} opacity={1} className="sensor-tooltip">
           <div className="sensor-tooltip-content">
-            <div className="sensor-tooltip-header">
-              <span style={{ color }}>{getStatusLabel(fine.status)}</span>
-              <span className="sensor-tooltip-id">{sensor.id}</span>
-            </div>
-            <div className="sensor-tooltip-name">{sensor.industryName}</div>
-            <div className="sensor-tooltip-row">
-              <span>Today:</span>
-              <span style={{ color }}>{formatLitres(sensor.todayExtraction)}</span>
-            </div>
-            <div className="sensor-tooltip-row">
-              <span>GW Depth:</span>
-              <span>{sensor.groundwaterLevel} m</span>
-            </div>
+            {isOwn ? (
+              <>
+                <div className="sensor-tooltip-header">
+                  <span style={{ color }}>{getStatusLabel(fine.status)}</span>
+                  <span className="sensor-tooltip-id">{sensor.id}</span>
+                </div>
+                <div className="sensor-tooltip-name">{sensor.industryName}</div>
+                <div className="sensor-tooltip-row">
+                  <span>Today:</span>
+                  <span style={{ color }}>{formatLitres(sensor.todayExtraction)}</span>
+                </div>
+                <div className="sensor-tooltip-row">
+                  <span>GW Depth:</span>
+                  <span>{sensor.groundwaterLevel} m</span>
+                </div>
+              </>
+            ) : (
+              <div className="sensor-tooltip-name">{sensor.industryName}</div>
+            )}
           </div>
         </Tooltip>
       )}
@@ -270,14 +294,15 @@ function SensorMarker({
 
 // -- Main export --
 interface MapClientProps {
-  userType: 'industry' | 'farmer';
+  userType: 'industry' | 'farmer' | 'blockchain';
   sensors: IndustrySensor[];
   selectedSensorId?: string;
-  onSensorSelect: (sensor: IndustrySensor | null) => void;
+  onSensorSelect: (sensor: IndustrySensor | null, e?: MouseEvent) => void;
   onCinematicComplete: (sensorId: string) => void;
+  restrictedToCompany?: string;
 }
 
-export default function MapClient({ userType, sensors, selectedSensorId, onSensorSelect, onCinematicComplete }: MapClientProps) {
+export default function MapClient({ userType, sensors, selectedSensorId, onSensorSelect, onCinematicComplete, restrictedToCompany }: MapClientProps) {
   return (
     <MapContainer
       center={MAP_CENTER}
@@ -309,7 +334,8 @@ export default function MapClient({ userType, sensors, selectedSensorId, onSenso
           key={sensor.id}
           sensor={sensor}
           isSelected={sensor.id === selectedSensorId}
-          onSelect={onSensorSelect}
+          onSelect={(s, e) => onSensorSelect(s, e)}
+          restrictedToCompany={restrictedToCompany}
         />
       ))}
     </MapContainer>

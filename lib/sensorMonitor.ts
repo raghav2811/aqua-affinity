@@ -34,11 +34,10 @@ export function evaluateWaterLevel(sensor: VRSensor): {
   }
 
   if (level > safe) {
-    // Warning zone — between safe and critical
-    const nearCritical = level > critical - 1.5;
+    // Warning zone — between safe and critical (always alert so emails are sent)
     return {
       state: 'standby',
-      shouldAlert: nearCritical,
+      shouldAlert: true,
       alertLevel: 'warning',
       message:
         `⚠️ [${sensor.id}] Groundwater at ${level.toFixed(1)} m — approaching critical zone. ` +

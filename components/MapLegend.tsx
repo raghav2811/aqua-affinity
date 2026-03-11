@@ -2,7 +2,9 @@
 
 import { SENSOR_ZONES } from '@/lib/data';
 
-export default function MapLegend() {
+export default function MapLegend({ hidden }: { hidden?: boolean }) {
+  if (hidden) return null;
+
   const statusItems = [
     { color: '#22c55e', label: 'Within Limits' },
     { color: '#f59e0b', label: 'Approaching Limit (>80%)' },

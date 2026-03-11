@@ -1,5 +1,5 @@
 export type IndustryType = 'small_micro' | 'water_intensive';
-export type UserType = 'industry' | 'farmer';
+export type UserType = 'industry' | 'farmer' | 'blockchain';
 export type SensorStatus = 'normal' | 'warning' | 'critical' | 'no_noc';
 
 export interface DailyExtraction {

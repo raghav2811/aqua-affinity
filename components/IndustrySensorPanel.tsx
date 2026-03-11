@@ -1,70 +1,187 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, AlertTriangle, CheckCircle, Clock, Droplets, Activity, CloudRain, TrendingUp } from 'lucide-react';
+import { X, AlertTriangle, CheckCircle, Clock, Droplets, Activity, CloudRain, TrendingUp, BarChart2 } from 'lucide-react';
+import GroundwaterForecastChart from './GroundwaterForecastChart';
 import { IndustrySensor } from '@/types';
 import { calculateFine, formatLitres, formatINR, getStatusColor, getStatusLabel } from '@/lib/fineCalculation';
+import type { IndustryFineEmailData } from '@/lib/emailTemplates';
 import ExtractionChart from './ExtractionChart';
 import RainfallChart from './RainfallChart';
 
-type Tab = 'overview' | 'extraction' | 'rainfall';
+type Tab = 'overview' | 'extraction' | 'rainfall' | 'forecast';
 
 interface Props {
   sensor: IndustrySensor | null;
   onClose: () => void;
+  userEmail?: string;
+  userName?: string;
 }
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: 'overview', label: 'Overview', icon: <Activity size={14} /> },
-  { id: 'extraction', label: 'Daily Chart', icon: <TrendingUp size={14} /> },
-  { id: 'rainfall', label: 'Rainfall', icon: <CloudRain size={14} /> },
+  { id: 'overview',  label: 'Overview',    icon: <Activity   size={14} /> },
+  { id: 'extraction',label: 'Daily Chart', icon: <TrendingUp size={14} /> },
+  { id: 'rainfall',  label: 'Rainfall',    icon: <CloudRain  size={14} /> },
+  { id: 'forecast',  label: 'ML Forecast', icon: <BarChart2  size={14} /> },
 ];
 
-export default function IndustrySensorPanel({ sensor, onClose }: Props) {
+const GEO_LAYERS: {
+  key: string; label: string; from: number; to: number;
+  grad: [string, string]; metric: string; getValue: (s: IndustrySensor) => string;
+}[] = [
+  { key:'L1', label:'L1 — Topsoil',    from:0,    to:0.32, grad:['#8B6914','#A07830'], metric:'Soil Moisture',  getValue:(s)=>`${s.moisturePercentage}%` },
+  { key:'L2', label:'L2 — Subsoil',    from:0.32, to:0.59, grad:['#7A5E34','#614A26'], metric:'Compaction',     getValue:()=>'Medium' },
+  { key:'L3', label:'L3 — Deep Clay',  from:0.59, to:0.83, grad:['#4a3a1e','#3a2a10'], metric:'Permeability',   getValue:()=>'Low' },
+  { key:'L4', label:'L4 — Transition', from:0.83, to:1,    grad:['#2a3838','#1e2e2e'], metric:'Saturation',     getValue:(s)=>`${Math.min(35,Math.round(s.moisturePercentage*1.4))}%` },
+];
+
+export default function IndustrySensorPanel({ sensor, onClose, userEmail, userName }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
 
-  return (
-    <AnimatePresence>
-      {sensor && (
-        <>
-          {/* Backdrop (mobile) */}
-          <motion.div
-            key="backdrop"
-            className="absolute inset-0 md:hidden"
-            style={{ background: 'rgba(14,165,233,0.15)', zIndex: 400 }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-          />
+  // Send a fine/violation email once per unique sensor open (not on every re-render)
+  const notifiedSensorRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!sensor || !userEmail) return;
+    if (notifiedSensorRef.current === sensor.id) return; // already notified for this sensor
 
-          {/* Main Panel */}
-          <motion.div
-            key="panel"
-            className="absolute top-0 right-0 h-full flex flex-col overflow-hidden"
-            style={{
-              width: 'min(440px, 100%)',
-              zIndex: 500,
-              background: '#ffffff',
-              borderLeft: '1px solid #bae6fd',
-              boxShadow: '-8px 0 40px rgba(14,165,233,0.12)',
-            }}
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 26, stiffness: 280 }}
-          >
-            <PanelContent
-              sensor={sensor}
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              onClose={onClose}
-            />
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+    const fine = calculateFine(sensor);
+    if (fine.status !== 'critical' && fine.status !== 'no_noc' && fine.status !== 'warning') return;
+
+    notifiedSensorRef.current = sensor.id;
+
+    const emailData: IndustryFineEmailData = {
+      recipientName:  userName ?? 'Industry Official',
+      industryName:   sensor.industryName,
+      sensorId:       sensor.id,
+      location:       sensor.location,
+      industryType:   sensor.industryType,
+      violationType:  fine.status as 'critical' | 'no_noc' | 'warning',
+      todayExtraction: sensor.todayExtraction,
+      dailyLimit:     fine.dailyLimit,
+      finePerDay:     fine.finePerDay,
+      daysExceeded:   fine.daysExceeded,
+      totalFine30Days: fine.totalFine30Days,
+      nocAnnualFine:  fine.nocAnnualFine,
+      nocFineCategory: fine.nocFineCategory,
+      timestamp:      new Date().toISOString(),
+    };
+
+    fetch('/api/notifications/send-email', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ type: 'industry_fine', to: userEmail, data: emailData }),
+    }).catch(console.error);
+  }, [sensor?.id, userEmail, userName]);
+
+  if (!sensor) return null;
+
+  return (
+    <div className="flex w-full h-full overflow-hidden">
+      {/* LEFT — Geological Cross-Section 44% */}
+      <GeoSection sensor={sensor} onClose={onClose} />
+
+      {/* RIGHT — Data Panel 56% */}
+      <div
+        className="flex flex-col overflow-hidden"
+        style={{
+          flex: '0 0 56%',
+          background: '#ffffff',
+          borderLeft: '1px solid #bae6fd',
+          boxShadow: '-8px 0 40px rgba(14,165,233,0.12)',
+        }}
+      >
+        <PanelContent
+          sensor={sensor}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          onClose={onClose}
+        />
+      </div>
+    </div>
+  );
+}
+
+function Cloud() {
+  return (
+    <div style={{ position:'relative', width:48, height:20 }}>
+      <div style={{ position:'absolute', bottom:0, left:4, right:4, height:12, background:'rgba(255,255,255,0.82)', borderRadius:8 }} />
+      <div style={{ position:'absolute', bottom:6, left:10, width:18, height:16, background:'rgba(255,255,255,0.82)', borderRadius:'50%' }} />
+      <div style={{ position:'absolute', bottom:4, left:22, width:14, height:14, background:'rgba(255,255,255,0.82)', borderRadius:'50%' }} />
+    </div>
+  );
+}
+
+function GeoSection({ sensor, onClose: _onClose }: { sensor: IndustrySensor; onClose: () => void }) {
+  const gwl = sensor.groundwaterLevel;
+  return (
+    <div
+      className="relative flex flex-col overflow-hidden"
+      style={{ flex:'0 0 44%', background:'#0a1628' }}
+    >
+      <style>{`@keyframes ispwave { 0%{transform:translateX(0)} 100%{transform:translateX(-60px)} }`}</style>
+
+      {/* Sky / Atmosphere */}
+      <div style={{ height:64, background:'linear-gradient(180deg,#87ceeb,#b8e4f3)', position:'relative', flexShrink:0 }}>
+        <div style={{ position:'absolute', top:10, right:32, width:28, height:28, background:'radial-gradient(circle,#ffe066,#ffcc00)', borderRadius:'50%', boxShadow:'0 0 16px 4px rgba(255,220,0,0.4)' }} />
+        <div style={{ position:'absolute', top:14, left:'20%' }}><Cloud /></div>
+        <div style={{ position:'absolute', top:20, left:'55%', transform:'scale(0.7)' }}><Cloud /></div>
+        <div style={{ position:'absolute', bottom:4, left:12, fontSize:9, color:'#0e4f72', letterSpacing:'0.08em', fontWeight:600 }}>SKY / ATMOSPHERE</div>
+      </div>
+
+      {/* Ground Surface */}
+      <div style={{ height:14, background:'linear-gradient(180deg,#6B4226,#4a2e14)', flexShrink:0, display:'flex', alignItems:'center' }}>
+        <span style={{ fontSize:8, color:'#c4956a', marginLeft:10, letterSpacing:'0.08em', fontWeight:600 }}>GROUND SURFACE — 0 m</span>
+      </div>
+
+      {/* Geological Layers */}
+      <div className="relative flex flex-col" style={{ flex:'0 0 52%' }}>
+        <div style={{ position:'absolute', left:'42%', top:0, bottom:0, width:2, background:'linear-gradient(180deg,rgba(56,189,248,0.6),rgba(56,189,248,0.9))', zIndex:2 }} />
+        {GEO_LAYERS.map((layer) => {
+          const pct = (layer.to - layer.from) * 100;
+          const depthStart = (gwl * layer.from).toFixed(1);
+          const depthEnd   = (gwl * layer.to).toFixed(1);
+          return (
+            <div key={layer.key} style={{
+              flex:`0 0 ${pct}%`,
+              background:`linear-gradient(180deg,${layer.grad[0]},${layer.grad[1]})`,
+              position:'relative', borderBottom:'1px solid rgba(255,255,255,0.04)', overflow:'hidden',
+            }}>
+              <div style={{ position:'absolute', top:4, left:8, zIndex:3 }}>
+                <div style={{ fontSize:8, color:'rgba(255,255,255,0.5)', letterSpacing:'0.06em' }}>{layer.label}</div>
+                <div style={{ fontSize:7.5, color:'rgba(255,255,255,0.35)', marginTop:1 }}>{depthStart}m – {depthEnd}m</div>
+              </div>
+              <div style={{ position:'absolute', top:4, right:8, textAlign:'right', zIndex:3 }}>
+                <div style={{ fontSize:8, color:'rgba(255,255,255,0.45)' }}>{layer.metric}</div>
+                <div style={{ fontSize:10, color:'rgba(255,255,255,0.75)', fontWeight:700 }}>{layer.getValue(sensor)}</div>
+              </div>
+              <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px)', backgroundSize:'10px 10px', zIndex:1 }} />
+            </div>
+          );
+        })}
+        <div style={{ position:'absolute', bottom:-6, left:'calc(42% - 5px)', width:11, height:11, borderRadius:'50%', background:'#38bdf8', boxShadow:'0 0 8px 3px rgba(56,189,248,0.5)', zIndex:4 }} />
+      </div>
+
+      {/* Aquifer Zone */}
+      <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden"
+        style={{ background:'linear-gradient(180deg,#0a2a5e,#0e3a6e)' }}>
+        <div style={{ position:'absolute', top:0, left:0, right:0, height:18, overflow:'hidden' }}>
+          <div style={{ width:'calc(100% + 60px)', height:22, background:'rgba(56,189,248,0.12)', borderRadius:'50%', animation:'ispwave 3s linear infinite' }} />
+        </div>
+        <div style={{ textAlign:'center', zIndex:2 }}>
+          <div style={{ fontSize:9, color:'rgba(56,189,248,0.5)', letterSpacing:'0.15em', marginBottom:4 }}>AQUIFER ZONE</div>
+          <div style={{ fontSize:24, fontWeight:800, color:'#38bdf8', letterSpacing:'-0.02em' }}>{gwl} m</div>
+          <div style={{ fontSize:9, color:'rgba(56,189,248,0.45)', marginTop:2 }}>groundwater depth</div>
+        </div>
+        <div style={{ position:'absolute', inset:0, backgroundImage:'radial-gradient(circle,rgba(56,189,248,0.08) 1px,transparent 1px)', backgroundSize:'14px 14px' }} />
+      </div>
+
+      {/* Bottom bar */}
+      <div style={{ height:38, background:'rgba(0,0,0,0.7)', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'space-between', paddingLeft:12, paddingRight:12, borderTop:'1px solid rgba(56,189,248,0.15)' }}>
+        <span style={{ fontSize:9.5, color:'rgba(255,255,255,0.55)' }}>Today: <span style={{ color:'#38bdf8', fontWeight:700 }}>{formatLitres(sensor.todayExtraction)}</span></span>
+        <span style={{ fontSize:9.5, color:'rgba(255,255,255,0.55)' }}>Depth: <span style={{ color:'#38bdf8', fontWeight:700 }}>{gwl} m</span></span>
+      </div>
+    </div>
   );
 }
 
@@ -83,7 +200,6 @@ function PanelContent({
   const statusColor = getStatusColor(fine.status);
   const statusLabel = getStatusLabel(fine.status);
   const limitPct = Math.min((sensor.todayExtraction / fine.dailyLimit) * 100, 150);
-  const industryLabel = sensor.industryType === 'small_micro' ? 'Small / Micro Industry' : 'Water Intensive Industry';
 
   return (
     <>
@@ -112,21 +228,7 @@ function PanelContent({
           </button>
         </div>
 
-        {/* Industry type & NOC row */}
-        <div className="flex items-center gap-2 mt-3">
-          <span className="text-xs px-2 py-1 rounded-lg"
-            style={{ background: 'rgba(56,189,248,0.12)', color: '#38bdf8' }}>
-            {industryLabel}
-          </span>
-          <span className="text-xs px-2 py-1 rounded-lg flex items-center gap-1"
-            style={sensor.hasNOC
-              ? { background: 'rgba(34,197,94,0.12)', color: '#22c55e' }
-              : { background: 'rgba(239,68,68,0.12)', color: '#ef4444' }
-            }>
-            {sensor.hasNOC ? <CheckCircle size={11} /> : <AlertTriangle size={11} />}
-            {sensor.hasNOC ? 'NOC Registered' : 'NOC Not Registered'}
-          </span>
-        </div>
+
       </div>
 
       {/* Tabs */}
@@ -143,7 +245,7 @@ function PanelContent({
             {tab.label}
             {activeTab === tab.id && (
               <motion.div
-                layoutId="tab-underline"
+                layoutId="isp-tab-underline"
                 className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
                 style={{ background: '#0284c7' }}
               />
@@ -172,6 +274,9 @@ function PanelContent({
             {activeTab === 'rainfall' && (
               <RainfallTab sensor={sensor} />
             )}
+            {activeTab === 'forecast' && (
+              <ForecastTab sensor={sensor} />
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -185,8 +290,28 @@ function OverviewTab({ sensor, fine, statusColor, limitPct }: {
   statusColor: string;
   limitPct: number;
 }) {
+  const industryLabel = sensor.industryType === 'small_micro' ? 'Small / Micro' : 'Water Intensive';
   return (
     <div className="space-y-4">
+      {/* Industry Type + NOC Status cards */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-xl p-3.5" style={{ background:'rgba(2,132,199,0.08)', border:'1px solid rgba(2,132,199,0.25)' }}>
+          <p className="text-xs mb-1" style={{ color:'#64748b' }}>Industry Type</p>
+          <p className="text-sm font-bold leading-tight" style={{ color:'#0284c7' }}>{industryLabel}</p>
+        </div>
+        <div className="rounded-xl p-3.5" style={
+          sensor.hasNOC
+            ? { background:'rgba(34,197,94,0.08)',  border:'1px solid rgba(34,197,94,0.25)' }
+            : { background:'rgba(249,115,22,0.08)', border:'1px solid rgba(249,115,22,0.3)' }
+        }>
+          <p className="text-xs mb-1" style={{ color:'#64748b' }}>NOC Status</p>
+          <p className="text-sm font-bold leading-tight" style={{ color: sensor.hasNOC ? '#22c55e' : '#f97316' }}>
+            {sensor.hasNOC ? 'Registered' : 'Not Registered'}
+          </p>
+          {!sensor.hasNOC && <p className="text-xs mt-0.5" style={{ color:'#f97316', opacity:0.7 }}>Penalty applicable</p>}
+        </div>
+      </div>
+
       {/* Fine Alert */}
       {(fine.status === 'critical' || fine.status === 'no_noc') && (
         <motion.div
@@ -380,6 +505,14 @@ function RainfallTab({ sensor }: { sensor: IndustrySensor }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ForecastTab({ sensor }: { sensor: IndustrySensor }) {
+  return (
+    <div className="space-y-3">
+      <GroundwaterForecastChart sensor={sensor} />
     </div>
   );
 }

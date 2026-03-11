@@ -11,17 +11,22 @@ export async function fetchIndustrySensors(): Promise<IndustrySensor[]> {
   const db = getSupabase();
   if (!db) return staticIndustrySensors;    // fallback when Supabase not configured
 
-  const { data, error } = await db
-    .from('industry_sensors')
-    .select(`
-      *,
-      daily_extractions (date, liters),
-      rainfall_forecasts (date, mm, probability)
-    `);
+  try {
+    const { data, error } = await db
+      .from('industry_sensors')
+      .select(`
+        *,
+        daily_extractions (date, liters),
+        rainfall_forecasts (date, mm, probability)
+      `);
 
-  if (error) throw new Error(`fetchIndustrySensors: ${error.message}`);
+    if (error) {
+      console.warn('[fetchIndustrySensors] DB error, using static fallback:', error.message);
+      return staticIndustrySensors;
+    }
+    if (!data || data.length === 0) return staticIndustrySensors;
 
-  return (data ?? []).map((row) => ({
+    return data.map((row) => ({
     id:                  row.id,
     name:                row.name,
     industryName:        row.industry_name,
@@ -39,7 +44,11 @@ export async function fetchIndustrySensors(): Promise<IndustrySensor[]> {
     rainfallForecast:    (row.rainfall_forecasts as RainfallForecast[])
                            .slice()
                            .sort((a, b) => a.date.localeCompare(b.date)),
-  }));
+    }));
+  } catch (err) {
+    console.warn('[fetchIndustrySensors] unexpected error, using static fallback:', err);
+    return staticIndustrySensors;
+  }
 }
 
 /** Upsert a single industry sensor's live readings (groundwater, moisture, today_extraction) */
@@ -68,34 +77,43 @@ export async function fetchVRSensors(): Promise<VRSensor[]> {
   const db = getSupabase();
   if (!db) return staticVRSensors;          // fallback when Supabase not configured
 
-  // 1. Main sensor rows
-  const { data: sensors, error: sErr } = await db
-    .from('vr_sensors')
-    .select('*');
-  if (sErr) throw new Error(`fetchVRSensors (sensors): ${sErr.message}`);
+  try {
+    // 1. Main sensor rows
+    const { data: sensors, error: sErr } = await db
+      .from('vr_sensors')
+      .select('*');
+    if (sErr) {
+      console.warn('[fetchVRSensors] DB error, using static fallback:', sErr.message);
+      return staticVRSensors;
+    }
 
-  const sensorIds = (sensors ?? []).map((s) => s.id as string);
-  if (sensorIds.length === 0) return [];
+    const sensorIds = (sensors ?? []).map((s) => s.id as string);
+    if (sensorIds.length === 0) return staticVRSensors;
 
-  // 2. Last 25 hours of readings (enough for "latest" + 24h history)
-  const since = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString();
-  const { data: readings, error: rErr } = await db
-    .from('sensor_readings')
-    .select('*')
-    .in('sensor_id', sensorIds)
-    .gte('timestamp', since)
-    .order('timestamp', { ascending: false });
-  if (rErr) throw new Error(`fetchVRSensors (readings): ${rErr.message}`);
+    // 2. Last 25 hours of readings (enough for "latest" + 24h history)
+    const since = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString();
+    const { data: readings, error: rErr } = await db
+      .from('sensor_readings')
+      .select('*')
+      .in('sensor_id', sensorIds)
+      .gte('timestamp', since)
+      .order('timestamp', { ascending: false });
+    if (rErr) {
+      console.warn('[fetchVRSensors] readings error, using static fallback:', rErr.message);
+      return staticVRSensors;
+    }
 
-  // 3. All alerts for these sensors (most recent first)
-  const { data: alerts, error: aErr } = await db
-    .from('farmer_alerts')
-    .select('*')
-    .in('sensor_id', sensorIds)
-    .order('timestamp', { ascending: false });
-  if (aErr) throw new Error(`fetchVRSensors (alerts): ${aErr.message}`);
+    // 3. All alerts for these sensors (most recent first)
+    const { data: alerts, error: aErr } = await db
+      .from('farmer_alerts')
+      .select('*')
+      .in('sensor_id', sensorIds)
+      .order('timestamp', { ascending: false });
+    if (aErr) {
+      console.warn('[fetchVRSensors] alerts error, continuing without alerts:', aErr.message);
+    }
 
-  return (sensors ?? []).map((sensor) => {
+    return (sensors ?? []).map((sensor) => {
     const sReadings = (readings ?? []).filter((r) => r.sensor_id === sensor.id);
     const current   = sReadings[0] ?? null;
     const history   = sReadings.slice(0, 24);
@@ -117,8 +135,12 @@ export async function fetchVRSensors(): Promise<VRSensor[]> {
       currentReading:          current ? mapReading(current) : null,
       hourlyHistory:           history.map(mapReading),
       alerts:                  sAlerts.map(mapAlert).slice(0, 10),
-    } as VRSensor;
-  });
+      } as VRSensor;
+    });
+  } catch (err) {
+    console.warn('[fetchVRSensors] unexpected error, using static fallback:', err);
+    return staticVRSensors;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

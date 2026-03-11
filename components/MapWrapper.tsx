@@ -24,14 +24,15 @@ const MapClient = dynamic(() => import('./MapClient'), {
 });
 
 interface MapWrapperProps {
-  userType: 'industry' | 'farmer';
+  userType: 'industry' | 'farmer' | 'blockchain';
   sensors: IndustrySensor[];
   selectedSensorId?: string;
-  onSensorSelect: (sensor: IndustrySensor | null) => void;
-  onCinematicComplete: (sensorId: string) => void;
+  onSensorSelect: (sensor: IndustrySensor | null, e?: MouseEvent) => void;
+  onCinematicComplete?: (sensorId: string) => void;
+  restrictedToCompany?: string;
 }
 
-export default function MapWrapper({ userType, sensors, selectedSensorId, onSensorSelect, onCinematicComplete }: MapWrapperProps) {
+export default function MapWrapper({ userType, sensors, selectedSensorId, onSensorSelect, onCinematicComplete, restrictedToCompany }: MapWrapperProps) {
   return (
     <div className="w-full h-full">
       <MapClient
@@ -39,7 +40,8 @@ export default function MapWrapper({ userType, sensors, selectedSensorId, onSens
         sensors={sensors}
         selectedSensorId={selectedSensorId}
         onSensorSelect={onSensorSelect}
-        onCinematicComplete={onCinematicComplete}
+        onCinematicComplete={onCinematicComplete ?? (() => {})}
+        restrictedToCompany={restrictedToCompany}
       />
     </div>
   );

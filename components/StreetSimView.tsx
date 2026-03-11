@@ -78,8 +78,8 @@ export default function StreetSimView({ sensor, onClose }: Props) {
       transition={{ duration: 0.35 }}
       style={{
         position: 'fixed', inset: 0, zIndex: 9999,
-        background: 'rgba(7,10,18,0.92)',
-        backdropFilter: 'blur(4px)',
+        background: 'rgba(14,165,233,0.12)',
+        backdropFilter: 'blur(8px)',
         display: 'flex', flexDirection: 'column',
         fontFamily: 'inherit',
       }}
@@ -96,21 +96,21 @@ export default function StreetSimView({ sensor, onClose }: Props) {
           margin: 'auto',
           width: 'min(1060px, 96vw)',
           maxHeight: '88vh',
-          background: '#080e1c',
-          border: `1px solid ${color}30`,
+          background: '#ffffff',
+          border: `1px solid ${color}40`,
           borderRadius: 16,
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: `0 32px 80px rgba(0,0,0,0.8), 0 0 0 1px ${color}18`,
+          boxShadow: `0 32px 80px rgba(14,165,233,0.15), 0 0 0 1px ${color}25`,
         }}
       >
         {/* ── Top header bar ─────────────────────────────────────────────────── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '10px 16px',
-          background: `linear-gradient(135deg, ${color}14, transparent)`,
-          borderBottom: `1px solid ${color}20`,
+          background: '#f8fafc',
+          borderBottom: '1px solid #e0f2fe',
           flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -119,11 +119,11 @@ export default function StreetSimView({ sensor, onClose }: Props) {
               boxShadow: `0 0 10px ${color}`,
               animation: 'ssledblink 1.6s ease-in-out infinite',
             }} />
-            <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.1em' }}>
+            <span style={{ color: '#64748b', fontSize: 10, letterSpacing: '0.1em' }}>
               GROUND SENSOR SCAN
             </span>
-            <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: 10 }}>·</span>
-            <span style={{ color: 'rgba(255,255,255,0.55)', fontFamily: 'monospace', fontSize: 11 }}>
+            <span style={{ color: '#cbd5e1', fontSize: 10 }}>·</span>
+            <span style={{ color: '#0c4a6e', fontFamily: 'monospace', fontSize: 11 }}>
               {sensor.id}
             </span>
             <span style={{
@@ -135,7 +135,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#94a3b8', fontSize: 10 }}>
               <Wifi size={11} />
               <span>LIVE</span>
               <ScanDot delay={0} /><ScanDot delay={0.2} /><ScanDot delay={0.4} />
@@ -143,9 +143,9 @@ export default function StreetSimView({ sensor, onClose }: Props) {
             <button
               onClick={onClose}
               style={{
-                background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                background: '#f0f9ff', border: '1px solid #e0f2fe',
                 borderRadius: 6, width: 28, height: 28, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b',
               }}
             >
               <X size={14} />
@@ -157,7 +157,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
         <div style={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
 
           {/* ════════════ LEFT: Visual Scan ════════════ */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: `1px solid ${color}15` }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid #e0f2fe' }}>
 
             {/* ── ABOVE GROUND: street scene ──────────────── */}
             <div style={{
@@ -211,7 +211,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
                 position: 'absolute', bottom: 0, left: 0, right: 0,
                 height: 22,
                 background: 'linear-gradient(180deg, #1a1208 0%, #0d0a05 100%)',
-                borderTop: '1px solid rgba(255,255,255,0.07)',
+                borderTop: '1px solid rgba(14,165,233,0.4)',
               }}>
                 {/* Road texture marks */}
                 <div style={{ position: 'absolute', top: '40%', left: '15%', right: '15%', height: 1, background: 'rgba(255,255,255,0.04)' }} />
@@ -225,7 +225,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
                 {/* Sensor head */}
                 <div style={{
                   width: 34, height: 24, borderRadius: 6,
-                  background: '#1e293b', border: `2px solid ${color}`,
+                  background: '#f0f9ff', border: `2px solid ${color}`,
                   boxShadow: `0 0 20px ${color}60`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   position: 'relative',
@@ -252,7 +252,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
               {/* Scan overlay label */}
               <div style={{
                 position: 'absolute', top: 8, left: 12,
-                color: 'rgba(255,255,255,0.2)', fontSize: 9, letterSpacing: '0.12em',
+                color: 'rgba(255,255,255,0.55)', fontSize: 9, letterSpacing: '0.12em',
               }}>
                 SURFACE · {sensor.location?.toUpperCase()}
               </div>
@@ -260,7 +260,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
               {/* Coordinates */}
               <div style={{
                 position: 'absolute', top: 8, right: 12,
-                color: 'rgba(255,255,255,0.2)', fontSize: 9, fontFamily: 'monospace',
+                color: 'rgba(255,255,255,0.55)', fontSize: 9, fontFamily: 'monospace',
               }}>
                 {sensor.lat.toFixed(4)}°N {sensor.lng.toFixed(4)}°E
               </div>
@@ -276,17 +276,17 @@ export default function StreetSimView({ sensor, onClose }: Props) {
               {/* Depth ruler */}
               <div style={{
                 width: 36, flexShrink: 0,
-                borderRight: '1px solid rgba(255,255,255,0.07)',
+                borderRight: '1px solid rgba(255,255,255,0.18)',
                 padding: '0 4px',
                 display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-                background: 'rgba(0,0,0,0.25)',
+                background: 'rgba(0,10,30,0.55)',
               }}>
                 {Array.from({ length: 6 }, (_, i) => {
                   const d = Math.round((maxDepth / 5) * i);
                   return (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 3, paddingTop: i === 0 ? 4 : 0 }}>
-                      <div style={{ width: 6, height: 1, background: 'rgba(255,255,255,0.15)' }} />
-                      <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 8, fontFamily: 'monospace' }}>
+                      <div style={{ width: 6, height: 1, background: 'rgba(255,255,255,0.4)' }} />
+                      <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 8, fontFamily: 'monospace' }}>
                         {d}m
                       </span>
                     </div>
@@ -303,7 +303,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
                   background: 'linear-gradient(180deg, #3d2b1a 0%, #5c3e2a 100%)',
                   borderBottom: '1px dashed rgba(255,255,255,0.07)',
                 }}>
-                  <div style={{ position: 'absolute', top: 4, left: 8, color: 'rgba(255,255,255,0.2)', fontSize: 8, letterSpacing: '0.08em' }}>
+                  <div style={{ position: 'absolute', top: 4, left: 8, color: 'rgba(255,255,255,0.6)', fontSize: 8, letterSpacing: '0.08em' }}>
                     TOPSOIL
                   </div>
                   {/* Soil texture dots */}
@@ -321,7 +321,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
                   background: 'linear-gradient(180deg, #4a2010 0%, #3b1a0e 100%)',
                   borderBottom: '1px dashed rgba(255,255,255,0.07)',
                 }}>
-                  <div style={{ position: 'absolute', top: 4, left: 8, color: 'rgba(255,255,255,0.18)', fontSize: 8, letterSpacing: '0.08em' }}>
+                  <div style={{ position: 'absolute', top: 4, left: 8, color: 'rgba(255,255,255,0.55)', fontSize: 8, letterSpacing: '0.08em' }}>
                     SUB-SOIL CLAY
                   </div>
                 </div>
@@ -333,7 +333,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
                   background: 'linear-gradient(180deg, #1a1a2e 0%, #151520 100%)',
                   borderBottom: '1px dashed rgba(255,255,255,0.05)',
                 }}>
-                  <div style={{ position: 'absolute', top: 4, left: 8, color: 'rgba(255,255,255,0.15)', fontSize: 8, letterSpacing: '0.08em' }}>
+                  <div style={{ position: 'absolute', top: 4, left: 8, color: 'rgba(255,255,255,0.5)', fontSize: 8, letterSpacing: '0.08em' }}>
                     WEATHERED ROCK
                   </div>
                   {/* Rock pattern */}
@@ -421,7 +421,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
                   background: 'linear-gradient(180deg, #0a0a12 0%, #050508 100%)',
                   zIndex: 2,
                 }}>
-                  <div style={{ position: 'absolute', top: 4, left: 8, color: 'rgba(255,255,255,0.1)', fontSize: 8, letterSpacing: '0.08em' }}>
+                  <div style={{ position: 'absolute', top: 4, left: 8, color: 'rgba(255,255,255,0.45)', fontSize: 8, letterSpacing: '0.08em' }}>
                     GRANITE / BEDROCK
                   </div>
                 </div>
@@ -460,7 +460,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
                 {/* UNDERGROUND label */}
                 <div style={{
                   position: 'absolute', top: 5, right: 8,
-                  color: 'rgba(255,255,255,0.15)', fontSize: 9, letterSpacing: '0.1em',
+                  color: 'rgba(255,255,255,0.5)', fontSize: 9, letterSpacing: '0.1em',
                 }}>
                   SUBSURFACE ANALYSIS
                 </div>
@@ -478,14 +478,14 @@ export default function StreetSimView({ sensor, onClose }: Props) {
             padding: '14px 14px',
             gap: 12,
             overflowY: 'auto',
-            background: 'rgba(0,0,0,0.2)',
+            background: '#f8fafc',
           }}>
             {/* Industry name */}
             <div>
-              <div style={{ color: '#fff', fontWeight: 700, fontSize: 13, lineHeight: 1.35 }}>
+              <div style={{ color: '#0c4a6e', fontWeight: 700, fontSize: 13, lineHeight: 1.35 }}>
                 {sensor.industryName}
               </div>
-              <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, marginTop: 3 }}>
+              <div style={{ color: '#64748b', fontSize: 10, marginTop: 3 }}>
                 📍 {sensor.location}
               </div>
             </div>
@@ -500,12 +500,12 @@ export default function StreetSimView({ sensor, onClose }: Props) {
             />
 
             {/* Soil Moisture */}
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 9, letterSpacing: '0.08em', marginBottom: 8 }}>
+            <div style={{ background: '#f0f9ff', borderRadius: 8, padding: '10px 12px', border: '1px solid #e0f2fe' }}>
+              <div style={{ color: '#64748b', fontSize: 9, letterSpacing: '0.08em', marginBottom: 8 }}>
                 SOIL MOISTURE
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.07)', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ flex: 1, height: 5, background: '#e0f2fe', borderRadius: 3, overflow: 'hidden' }}>
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${waterFill}%` }}
@@ -520,12 +520,12 @@ export default function StreetSimView({ sensor, onClose }: Props) {
             </div>
 
             {/* Extraction vs Limit */}
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ background: '#f0f9ff', borderRadius: 8, padding: '10px 12px', border: '1px solid #e0f2fe' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 9, letterSpacing: '0.08em' }}>TODAY&apos;S EXTRACTION</span>
+                <span style={{ color: '#64748b', fontSize: 9, letterSpacing: '0.08em' }}>TODAY&apos;S EXTRACTION</span>
                 <span style={{ color, fontWeight: 700, fontSize: 11 }}>{formatLitres(sensor.todayExtraction)}</span>
               </div>
-              <div style={{ height: 5, background: 'rgba(255,255,255,0.07)', borderRadius: 3, overflow: 'hidden', marginBottom: 4 }}>
+              <div style={{ height: 5, background: '#e0f2fe', borderRadius: 3, overflow: 'hidden', marginBottom: 4 }}>
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${limitPct}%` }}
@@ -537,8 +537,8 @@ export default function StreetSimView({ sensor, onClose }: Props) {
                 />
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 9 }}>0</span>
-                <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 9 }}>
+                <span style={{ color: '#94a3b8', fontSize: 9 }}>0</span>
+                <span style={{ color: '#94a3b8', fontSize: 9 }}>
                   Limit {formatLitres(fine.dailyLimit)}
                 </span>
               </div>
@@ -563,7 +563,7 @@ export default function StreetSimView({ sensor, onClose }: Props) {
                 <div style={{ color: '#ef4444', fontWeight: 800, fontSize: 16 }}>
                   {fine.status === 'no_noc' ? formatINR(fine.nocAnnualFine ?? 0) : formatINR(fine.totalFine30Days)}
                 </div>
-                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9, marginTop: 2 }}>
+                <div style={{ color: '#64748b', fontSize: 9, marginTop: 2 }}>
                   {fine.status === 'no_noc'
                     ? `Annual penalty · ${fine.nocFineCategory}`
                     : `30-day fine · ${fine.daysExceeded} days exceeded`}
@@ -597,8 +597,8 @@ export default function StreetSimView({ sensor, onClose }: Props) {
             </div>
 
             {/* 30-day summary */}
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 9, letterSpacing: '0.08em', marginBottom: 8 }}>
+            <div style={{ background: '#f0f9ff', borderRadius: 8, padding: '10px 12px', border: '1px solid #e0f2fe' }}>
+              <div style={{ color: '#64748b', fontSize: 9, letterSpacing: '0.08em', marginBottom: 8 }}>
                 30-DAY EXTRACTION PROFILE
               </div>
               <div style={{ display: 'flex', gap: 1.5, alignItems: 'flex-end', height: 36 }}>
@@ -616,13 +616,13 @@ export default function StreetSimView({ sensor, onClose }: Props) {
                   );
                 })}
               </div>
-              <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 8, marginTop: 4, textAlign: 'right' }}>
+              <div style={{ color: '#94a3b8', fontSize: 8, marginTop: 4, textAlign: 'right' }}>
                 last 20 days
               </div>
             </div>
 
             {/* Hint */}
-            <div style={{ color: 'rgba(255,255,255,0.15)', fontSize: 9, textAlign: 'center', marginTop: 'auto', paddingTop: 4 }}>
+            <div style={{ color: '#94a3b8', fontSize: 9, textAlign: 'center', marginTop: 'auto', paddingTop: 4 }}>
               Press ESC or click outside to close
             </div>
           </div>
@@ -658,17 +658,17 @@ function HudCard({
 }) {
   return (
     <div style={{
-      background: 'rgba(255,255,255,0.03)', borderRadius: 8,
-      padding: '10px 12px', border: '1px solid rgba(255,255,255,0.06)',
+      background: '#f0f9ff', borderRadius: 8,
+      padding: '10px 12px', border: '1px solid #e0f2fe',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'rgba(255,255,255,0.35)', fontSize: 9, letterSpacing: '0.08em', marginBottom: 5 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#64748b', fontSize: 9, letterSpacing: '0.08em', marginBottom: 5 }}>
         <span style={{ color: accent }}>{icon}</span>
         {label}
       </div>
       <div style={{ color: accent, fontSize: 22, fontWeight: 800, lineHeight: 1 }}>
         {value}
       </div>
-      <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9, marginTop: 2 }}>{sub}</div>
+      <div style={{ color: '#94a3b8', fontSize: 9, marginTop: 2 }}>{sub}</div>
     </div>
   );
 }

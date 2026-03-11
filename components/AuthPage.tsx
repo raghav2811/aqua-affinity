@@ -6,7 +6,7 @@ import {
   Droplets, Factory, Wheat, Mail, Lock, Eye, EyeOff,
   User, AlertCircle, Loader2, CheckCircle, LogIn,
 } from 'lucide-react';
-import { signUp, logIn, Session, UserRole } from '@/lib/auth';
+import { signUp, logIn, seedDefaultAccounts, Session, UserRole } from '@/lib/auth';
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Password strength
@@ -103,14 +103,18 @@ interface AuthPageProps {
 }
 
 export default function AuthPage({ onAuth }: AuthPageProps) {
+  // Seed default accounts on first render
+  useEffect(() => { seedDefaultAccounts(); }, []);
+
   // Mode & role
   const [mode, setMode]     = useState<'login' | 'signup'>('login');
   const [role, setRole]     = useState<UserRole>('industry');
 
-  // Form fields
-  const [name, setName]         = useState('');
-  const [email, setEmail]       = useState('');
-  const [password, setPassword] = useState('');
+  // Form fields (identifier = company name / farmer name / 'admin')
+  const [name,       setName]       = useState('');
+  const [identifier, setIdentifier] = useState('');  // replaces email for industry/farmer
+  const [email,      setEmail]      = useState('');
+  const [password,   setPassword]   = useState('');
   const [confirm, setConfirm]   = useState('');
   const [showPw, setShowPw]     = useState(false);
   const [showCf, setShowCf]     = useState(false);
@@ -145,12 +149,23 @@ export default function AuthPage({ onAuth }: AuthPageProps) {
     setTilt({ rx: 0, ry: 0 });
   }, []);
 
+  // When role changes, clear form and reset to login for industry/farmer
+  const handleRoleChange = (r: UserRole) => {
+    setRole(r);
+    setIdentifier('');
+    setEmail('');
+    setName('');
+    setPassword('');
+    setConfirm('');
+    setError('');
+    if (r !== 'admin') setMode('login');
+  };
+
   // ── Mode flip (3-D rotate) ────────────────────────────────────────────────
   function flipMode() {
-    if (flipping) return;
+    if (flipping || role !== 'admin') return;
     setFlipping(true);
     setError('');
-    // Rotate to edge
     setTilt({ rx: 0, ry: 90 });
     setTimeout(() => {
       setMode((m) => m === 'login' ? 'signup' : 'login');
@@ -180,10 +195,11 @@ export default function AuthPage({ onAuth }: AuthPageProps) {
       shake(); return;
     }
     setLoading(true);
-    // Simulate brief network delay (localStorage is instant — add realism)
     await new Promise((r) => setTimeout(r, 600));
+    // Admin uses email field; industry/farmer use identifier (name)
+    const loginId = role === 'admin' ? email : identifier;
     const result = mode === 'login'
-      ? logIn(email, password)
+      ? logIn(loginId, password)
       : signUp(name, email, password, role);
     setLoading(false);
     if (!result.ok) {
@@ -194,8 +210,10 @@ export default function AuthPage({ onAuth }: AuthPageProps) {
     setTimeout(() => onAuth(result.session!), 900);
   }
 
-  const roleColor  = role === 'industry' ? '#0284c7' : '#059669';
-  const str        = passwordStrength(password);
+  const roleColor = role === 'industry' ? '#0284c7'
+                  : role === 'farmer'   ? '#059669'
+                  : '#7c3aed';
+  const str           = passwordStrength(password);
   const cardTransform = `perspective(1200px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`;
 
   return (
@@ -251,30 +269,31 @@ export default function AuthPage({ onAuth }: AuthPageProps) {
           <form onSubmit={handleSubmit} noValidate>
             <div className="px-8 pt-8 pb-7">
               {/* ── Role selector ─────────────────────────────────────────── */}
-              <div className="flex gap-3 mb-6">
-                {(['industry', 'farmer'] as UserRole[]).map((r) => {
-                  const c = r === 'industry' ? '#0284c7' : '#059669';
+              <div className="flex gap-2 mb-6">
+                {([
+                  { r: 'industry' as UserRole, label: 'Industry', icon: <Factory size={13} />, color: '#0284c7' },
+                  { r: 'farmer'   as UserRole, label: 'Farmer',   icon: <Wheat    size={13} />, color: '#059669' },
+                  { r: 'admin'    as UserRole, label: 'Admin',    icon: <User     size={13} />, color: '#7c3aed' },
+                ]).map(({ r, label, icon, color }) => {
                   const sel = role === r;
                   return (
                     <button
                       key={r}
                       type="button"
-                      onClick={() => setRole(r)}
-                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                      onClick={() => handleRoleChange(r)}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all"
                       style={sel ? {
-                        background: c,
+                        background: color,
                         color: 'white',
-                        boxShadow: `0 0 24px ${c}60`,
-                        border: `1px solid ${c}`,
-                        animation: 'pulse3d 2s ease-in-out infinite',
+                        boxShadow: `0 0 20px ${color}55`,
+                        border: `1px solid ${color}`,
                       } : {
                         background: 'transparent',
-                        color: 'rgba(255,255,255,0.75)',
+                        color: 'rgba(255,255,255,0.65)',
                         border: '1px solid rgba(255,255,255,0.15)',
                       }}
                     >
-                      {r === 'industry' ? <Factory size={15} /> : <Wheat size={15} />}
-                      {r === 'industry' ? 'Industry' : 'Farmer'}
+                      {icon}{label}
                     </button>
                   );
                 })}
@@ -284,19 +303,45 @@ export default function AuthPage({ onAuth }: AuthPageProps) {
               <h2 className="text-white font-bold text-xl mb-0.5">
                 {mode === 'login' ? 'Sign in' : 'Create account'}
               </h2>
-              <p className="text-xs mb-5" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                {mode === 'login'
-                  ? `Access the ${role === 'industry' ? 'Industry' : 'Farmer'} dashboard`
-                  : `Join the GWiQ ${role === 'industry' ? 'Industry' : 'Farmer'} network`}
+              <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                {role === 'industry' ? 'Enter your registered company name'
+                 : role === 'farmer' ? 'Enter your registered farmer name'
+                 : mode === 'login'  ? 'Administrator access'
+                 : 'Create admin account'}
               </p>
 
+              {/* ── Credential hint for industry/farmer ──────────────────── */}
+              {role !== 'admin' && (
+                <div className="mb-4 px-3 py-2.5 rounded-xl text-xs"
+                  style={{ background: `${roleColor}22`, border: `1px solid ${roleColor}44`, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6 }}>
+                  🔐 <strong>Pre-registered accounts</strong><br />
+                  {role === 'industry'
+                    ? 'Username: your exact company name'
+                    : 'Username: your exact farmer name'}<br />
+                  Password: <code style={{ background: 'rgba(255,255,255,0.12)', padding: '1px 5px', borderRadius: 4 }}>gwiq@2026</code>
+                </div>
+              )}
+
               {/* ── Fields ────────────────────────────────────────────────── */}
-              {mode === 'signup' && (
+              {mode === 'signup' && role === 'admin' && (
                 <AuthInput icon={<User size={15} />} type="text" placeholder="Full name"
                   value={name} onChange={setName} roleColor={roleColor} />
               )}
-              <AuthInput icon={<Mail size={15} />} type="email" placeholder="Email address"
-                value={email} onChange={setEmail} roleColor={roleColor} />
+
+              {/* Industry / Farmer: identify by name; Admin: by email */}
+              {role !== 'admin' ? (
+                <AuthInput
+                  icon={role === 'industry' ? <Factory size={15} /> : <Wheat size={15} />}
+                  type="text"
+                  placeholder={role === 'industry' ? 'Company name (exact)' : 'Your registered name'}
+                  value={identifier}
+                  onChange={setIdentifier}
+                  roleColor={roleColor}
+                />
+              ) : (
+                <AuthInput icon={<Mail size={15} />} type="email" placeholder="Email address"
+                  value={email} onChange={setEmail} roleColor={roleColor} />
+              )}
               <AuthInput
                 icon={<Lock size={15} />}
                 type={showPw ? 'text' : 'password'}
